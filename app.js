@@ -1,10 +1,12 @@
+const fs = require('fs');
 const inquirer = require("inquirer");
+const generatePage = require('./src/page-template');
 
 const promptUser = () => {
     return inquirer.prompt([
         {
             type: 'input',
-            name: 'Name',
+            name: 'name',
             message: 'What is your name? (Required)',
             validate: nameInput => {
                 if (nameInput) {
@@ -17,7 +19,7 @@ const promptUser = () => {
         },
         {
             type: 'input',
-            name: 'GitHub',
+            name: 'github',
             message: 'Please enter your GitHub Username:',
             validate: gitHubUsername => {
                 if (gitHubUsername) {
@@ -56,7 +58,7 @@ const promptProject = portfolioData => {
     return inquirer.prompt([
         {
             type: 'input',
-            name: 'Name',
+            name: 'name',
             message: 'What is the name of your project?',
             validate: projectName => {
                 if (projectName) {
@@ -68,7 +70,7 @@ const promptProject = portfolioData => {
         },
         {
             type: 'input',
-            name: 'Description',
+            name: 'description',
             message: 'Provide a description of the project (Required)',
             validate: projectDescription => {
                 if (projectDescription) {
@@ -115,27 +117,22 @@ const promptProject = portfolioData => {
                 return promptProject(portfolioData);
             } else {
                 return portfolioData;
-            }
+            };
         });
-}
+};
 
 
 promptUser()
     .then(promptProject)
     .then(portfolioData => {
-        console.log(portfolioData);
+        const pageHTML = generatePage(portfolioData);
+
+        fs.writeFile('./index.html', pageHTML, err => {
+            if (err) throw new Error(err);
+
+            console.log('Page created! Check out index.html in this directory to see it!');
+        });
     });
-
-// const fs = require('fs');
-// const generatePage = require('./src/page-template.js');
-
-// const pageHTML = generatepage(name, github);
-
-// fs.writeFile('index.html', pageHTML, err => {
-//     if (err) throw err;
-
-//     console.log('Portfolio Complete! Check out index.html to see the output!');
-// });
 
 
 
